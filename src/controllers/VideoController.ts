@@ -6,20 +6,20 @@ import { DatabaseService } from '../services/DatabaseService';
 import { EVideoType } from '../Enum/EVideoType';
 import { VideoFile } from '../models/VideoFile';
 import { VideoStream } from "../models/VideoStream";
+import { ETableName } from '../Enum/ETableName';
+import { IAddVideoRequestBody } from '../interfaces/IRequest';
 export const addVideo: APIGatewayProxyHandler = async (event, context) => {
     try {
       let video: IVideo;
       let db: DatabaseService;
-      const body = JSON.parse(event.body);
+      const body: IAddVideoRequestBody = JSON.parse(event.body);
 
       if(!body.title) {
         throw new Error("Request is missing title");
-
       }
 
       if(!body.filename) {
         throw new Error("Request is missing filename");
-
       }
 
       if(!body.type) {
@@ -37,8 +37,10 @@ export const addVideo: APIGatewayProxyHandler = async (event, context) => {
           break;
       }
 
-      // Add Video to db
-
+      if(video) {
+        db = new DatabaseService(ETableName.VIDEOS);
+        await db.putItem(video)
+      }
 
       return ResponseService.success(video)
 
