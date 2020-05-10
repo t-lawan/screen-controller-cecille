@@ -47,6 +47,13 @@ functions:
       - http:
           method: get
           path: hello
+  addVideo:
+    handler: src/controllers/VideoController.addVideo
+    events:
+      - http: 
+          method: post
+          path: video/create
+          cors: true
 
 resources:
   Resources:
