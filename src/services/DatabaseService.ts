@@ -1,12 +1,13 @@
 import { DynamoDB, AWSError } from 'aws-sdk';
 import { bool } from 'aws-sdk/clients/signer';
+import { ETableName } from '../Enum/ETableName';
 
 export class DatabaseService {
     private tableName: string;
     dynamoDBDocuClient: DynamoDB.DocumentClient;
 
 
-    constructor(tableName: string = 'screen_communication') {
+    constructor(tableName: ETableName) {
         this.tableName = tableName;
         this.dynamoDBDocuClient = new DynamoDB.DocumentClient({region: process.env.REGION});
     }
