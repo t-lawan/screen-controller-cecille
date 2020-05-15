@@ -1,0 +1,38 @@
+import { ApiGatewayManagementApi } from "aws-sdk";
+import { APIGatewayProxyHandler } from "aws-lambda";
+import { ResponseService } from "../services/ResponseService";
+import { DatabaseService } from "../services/DatabaseService";
+import { Screen } from "../models/Screen";
+import { IAddScreenRequestBody } from "../interfaces/IRequest";
+import { ETableName } from "../Enum/ETableName";
+
+export const addScreen: APIGatewayProxyHandler = async (event, context) => {
+  try {
+    const body: IAddScreenRequestBody = JSON.parse(event.body);
+    if (!body.local_ip_address) {
+      throw new Error("Request is missing title");
+    }
+    if (!body.raspberry_pi_id) {
+      throw new Error("Request is missing filename");
+    }
+
+    if (!body.number_of_screens) {
+      throw new Error("Request is missing type");
+    }
+
+    let screen: Screen = new Screen(
+      body.local_ip_address,
+      body.raspberry_pi_id,
+      body.screen_type,
+      body.number_of_screens,
+      body.video_file_playlist
+    );
+    let db: DatabaseService;
+
+    db = new DatabaseService(ETableName.SCREENS);
+    await db.putItem(screen);
+    return ResponseService.success(screen);
+  } catch (error) {
+    return ResponseService.error(error.message, error.statusCode);
+  }
+};
