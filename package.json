@@ -9,10 +9,12 @@
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",
     "@types/uuid": "^7.0.3",
+    "@types/validator": "^13.0.0",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.662.0",
     "source-map-support": "^0.5.10",
-    "uuid": "^7.0.3"
+    "uuid": "^7.0.3",
+    "validator": "^13.0.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
