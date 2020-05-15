@@ -41,12 +41,6 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VIDEO_DYNAMODB_TABLE}"
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          method: get
-          path: hello
   addVideo:
     handler: src/controllers/VideoController.addVideo
     events:
@@ -54,6 +48,27 @@ functions:
           method: post
           path: video/create
           cors: true
+  getVideos:
+    handler: src/controllers/VideoController.getAllVideos
+    events:
+      - http: 
+          method: get
+          path: videos
+          cors: true
+  updateVideo:
+    handler: src/controllers/VideoController.updateVideo
+    events:
+      - http: 
+          method: post
+          path: video/update
+          cors: true
+  deleteVideo:
+    handler: src/controllers/VideoController.deleteVideo
+    events:
+      - http: 
+          method: post
+          path: video/delete
+          cors: true  
 
 resources:
   Resources:
