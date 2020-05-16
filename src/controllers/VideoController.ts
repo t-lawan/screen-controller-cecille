@@ -18,12 +18,11 @@ export const addVideo: APIGatewayProxyHandler = async (event, context) => {
     let video: IVideo;
     let db: DatabaseService;
     const body: IAddVideoRequestBody = JSON.parse(event.body);
-
-    if (validator.isAlphanumeric(body.title) && !validator.isEmpty(body.title)) {
+    if (!validator.isAscii(body.title)) {
       throw new Error("Request is missing title");
     }
 
-    if (validator.isAscii(body.uri)) {
+    if (!validator.isAscii(body.uri)) {
       throw new Error("Request is missing uri");
     }
 
