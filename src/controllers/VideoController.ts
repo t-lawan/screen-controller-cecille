@@ -23,8 +23,8 @@ export const addVideo: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing title");
     }
 
-    if (validator.isAscii(body.filename)) {
-      throw new Error("Request is missing filename");
+    if (validator.isAscii(body.uri)) {
+      throw new Error("Request is missing uri");
     }
 
     if (!body.type) {
@@ -33,10 +33,10 @@ export const addVideo: APIGatewayProxyHandler = async (event, context) => {
 
     switch (body.type) {
       case EVideoType.FILE:
-        video = new VideoFile(body.title, body.filename);
+        video = new VideoFile(body.title, body.uri);
         break;
       case EVideoType.STREAM:
-        video = new VideoStream(body.title, body.filename);
+        video = new VideoStream(body.title, body.uri);
         break;
       default:
         break;
@@ -77,8 +77,8 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing title");
     }
 
-    if (!body.filename) {
-      throw new Error("Request is missing filename");
+    if (!body.uri) {
+      throw new Error("Request is missing uri");
     }
 
     if (!body.type) {
@@ -89,7 +89,7 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
 
     video = {
       id: body.id,
-      filename: body.filename,
+      uri: body.uri,
       title: body.title,
       type: body.type
     };
@@ -98,7 +98,7 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
 
     db = new DatabaseService(ETableName.VIDEOS);
     await db.updateItem(video.id, {
-      filename: video.filename,
+      uri: video.uri,
       type: video.type,
       title: video.title
     });
@@ -119,8 +119,8 @@ export const deleteVideo: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing title");
     }
 
-    if (!body.filename) {
-      throw new Error("Request is missing filename");
+    if (!body.uri) {
+      throw new Error("Request is missing uri");
     }
 
     if (!body.type) {

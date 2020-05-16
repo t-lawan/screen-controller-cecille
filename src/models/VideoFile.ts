@@ -5,13 +5,13 @@ import { EVideoType } from '../Enum/EVideoType';
 export class VideoFile implements IVideo {
     id: string; 
     title: string;
-    filename: string;
+    uri: string;
     type: EVideoType;
 
-    constructor(title: string, filename: string) {
+    constructor(title: string, uri: string) {
         this.id = v4();
         this.title = title;
-        this.filename = filename;
+        this.uri = uri;
         this.type = EVideoType.FILE;
     }
 }

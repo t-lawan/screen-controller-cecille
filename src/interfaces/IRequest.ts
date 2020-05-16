@@ -2,14 +2,14 @@ import { EVideoType } from '../Enum/EVideoType';
 import { EScreenType } from '../Enum/EScreenType';
 export interface IAddVideoRequestBody {
     title: string;
-    filename: string;
+    uri: string;
     type: EVideoType
 }
 
 export interface IUpdateVideoRequestBody {
     id: string;
     title: string;
-    filename: string;
+    uri: string;
     type: EVideoType
 }
 

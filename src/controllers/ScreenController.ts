@@ -13,7 +13,7 @@ export const addScreen: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing title");
     }
     if (!body.raspberry_pi_id) {
-      throw new Error("Request is missing filename");
+      throw new Error("Request is missing raspberry_pi_id");
     }
 
     if (!body.number_of_screens) {

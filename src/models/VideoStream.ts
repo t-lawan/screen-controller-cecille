@@ -5,13 +5,13 @@ import { IVideo } from '../interfaces/IVideo';
 export class VideoStream implements IVideo {
     id: string; 
     title: string;
-    filename: string;
+    uri: string;
     type: EVideoType;
 
-    constructor(title: string, filename: string) {
+    constructor(title: string, uri: string) {
         this.id = v4();
         this.title = title;
-        this.filename = filename;
+        this.uri = uri;
         this.type = EVideoType.STREAM;
     }
 }
