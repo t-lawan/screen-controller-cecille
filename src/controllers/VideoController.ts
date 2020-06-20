@@ -26,11 +26,11 @@ export const addVideo: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing uri");
     }
 
-    if (!body.type) {
+    if (!body.video_type) {
       throw new Error("Request is missing type");
     }
 
-    switch (body.type) {
+    switch (body.video_type) {
       case EVideoType.FILE:
         video = new VideoFile(body.title, body.uri);
         break;
@@ -69,6 +69,8 @@ export const getAllVideos: APIGatewayProxyHandler = async (event, context) => {
 export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
   try {
     const body: IUpdateVideoRequestBody = JSON.parse(event.body);
+    console.log('BODY', body)
+
     if (!body.id) {
       throw new Error("Request is missing id");
     }
@@ -80,7 +82,7 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing uri");
     }
 
-    if (!body.type) {
+    if (!body.video_type) {
       throw new Error("Request is missing type");
     }
 
@@ -90,15 +92,16 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
       id: body.id,
       uri: body.uri,
       title: body.title,
-      type: body.type
+      video_type: body.video_type
     };
 
     let db: DatabaseService;
 
     db = new DatabaseService(ETableName.VIDEOS);
+    console.log('VIDEO', video)
     await db.updateItem(video.id, {
       uri: video.uri,
-      type: video.type,
+      video_type: video.video_type,
       title: video.title
     });
 

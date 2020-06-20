@@ -3,5 +3,5 @@ export interface IVideo {
     id: string;
     title: string;
     uri: string;
-    type: EVideoType
+    video_type: EVideoType
 }
