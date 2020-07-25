@@ -51,7 +51,6 @@ export const addVideo: APIGatewayProxyHandler = async (event, context) => {
     return ResponseService.error(error.message, error.statusCode);
   }
 };
-
 export const getAllVideos: APIGatewayProxyHandler = async (event, context) => {
   try {
     let videos: IVideo[] = [];
@@ -110,7 +109,6 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
     return ResponseService.error(error.message, error.statusCode);
   }
 };
-
 export const deleteVideo: APIGatewayProxyHandler = async (event, context) => {
   try {
     const body: IUpdateVideoRequestBody = JSON.parse(event.body);
@@ -125,7 +123,7 @@ export const deleteVideo: APIGatewayProxyHandler = async (event, context) => {
       throw new Error("Request is missing uri");
     }
 
-    if (!body.type) {
+    if (!body.video_type) {
       throw new Error("Request is missing type");
     }
 

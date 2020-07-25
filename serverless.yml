@@ -22,6 +22,7 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     SCREEN_COMMUNICATION_DYNAMODB_TABLE: screen_communication
+    SCREENS_DYNAMODB_TABLE: screens
     VIDEO_DYNAMODB_TABLE: videos
     REGION: us-east-1
   iamRoleStatements:
@@ -31,7 +32,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCREEN_COMMUNICATION_DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCREENS_DYNAMODB_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Scan
@@ -68,7 +69,21 @@ functions:
       - http: 
           method: post
           path: video/delete
-          cors: true  
+          cors: true
+  addScreen:
+    handler: src/controllers/ScreenController.addScreen
+    events:
+      - http: 
+          method: post
+          path: screen/create
+          cors: true
+  getScreens:
+    handler: src/controllers/ScreenController.getAllScreens
+    events:
+      - http: 
+          method: get
+          path: screens
+          cors: true
 
 resources:
   Resources:
@@ -76,6 +91,19 @@ resources:
       Type: "AWS::DynamoDB::Table"
       Properties:
         TableName: ${self:provider.environment.SCREEN_COMMUNICATION_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    ScreensTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.SCREENS_DYNAMODB_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
