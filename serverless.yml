@@ -84,6 +84,13 @@ functions:
           method: get
           path: screens
           cors: true
+  updateScreen:
+    handler: src/controllers/ScreenController.updateScreen
+    events:
+      - http: 
+          method: post
+          path: screen/playlist/add
+          cors: true
 
 resources:
   Resources:

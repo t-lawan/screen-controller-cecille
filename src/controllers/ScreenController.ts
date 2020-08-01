@@ -53,7 +53,7 @@ export const getAllScreens: APIGatewayProxyHandler = async (event, context) => {
   }
 };
 
-export const addVideoToPlaylist: APIGatewayProxyHandler = async (event, context) => {
+export const updateScreen: APIGatewayProxyHandler = async (event, context) => {
   try {
     const body: IAddScreenRequestBody = JSON.parse(event.body);
     if (!body.local_ip_address) {
