@@ -1,4 +1,3 @@
-import { ApiGatewayManagementApi } from "aws-sdk";
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { ResponseService } from "../services/ResponseService";
 import { IVideo } from "../interfaces/IVideo";
@@ -97,7 +96,6 @@ export const updateVideo: APIGatewayProxyHandler = async (event, context) => {
     let db: DatabaseService;
 
     db = new DatabaseService(ETableName.VIDEOS);
-    console.log('VIDEO', video)
     await db.updateItem(video.id, {
       uri: video.uri,
       video_type: video.video_type,

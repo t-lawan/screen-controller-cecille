@@ -6,5 +6,5 @@ export interface IScreen {
     raspberry_pi_id: number;
     number_of_screens: number;
     video_file_playlist: IPlaylistEntry[];
-    type: EScreenType;
+    screen_type: EScreenType;
 }

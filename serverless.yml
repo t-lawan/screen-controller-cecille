@@ -89,7 +89,7 @@ functions:
     events:
       - http: 
           method: post
-          path: screen/playlist/add
+          path: screen/update
           cors: true
 
 resources:
