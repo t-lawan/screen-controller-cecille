@@ -81,7 +81,7 @@ export const updateScreen: APIGatewayProxyHandler = async (event, context) => {
     await db.updateItem(screen.id, {
       local_ip_address: body.local_ip_address,
       raspberry_pi_id: body.raspberry_pi_id,
-      type: body.screen_type,
+      screen_type: body.screen_type,
       number_of_screens: body.number_of_screens,
       video_file_playlist: body.video_file_playlist
     });
