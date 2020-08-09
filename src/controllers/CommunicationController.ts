@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import { ResponseService } from "../services/ResponseService";
 import { ApiGatewayManagementApi } from "aws-sdk";
 import { DatabaseService } from "../services/DatabaseService";
-import { ETableName } from "../Enum/ETableName";
+import { ETableName } from '../Enum/ETableName';
 import { IWebsocketMessage } from "../interfaces/IRequest";
 import { EWSMessageType } from "../Enum/EWSMessageType";
 export const connectSocket: APIGatewayProxyHandler = async (event, context) => {
@@ -116,3 +116,26 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
     return ResponseService.error(error.message, error.statusCode);
   }
 };
+
+export const disconnectSocket: APIGatewayProxyHandler = async (
+    event,
+    context
+  ) => {
+    try {
+      const connectionId = event.requestContext.connectionId;
+  
+      let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
+      await db
+        .deleteItem(connectionId)
+        .then(() => {
+          console.log("deleted successfully");
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+  
+      return ResponseService.success("success");
+    } catch (error) {
+      return ResponseService.error(error.message, error.statusCode);
+    }
+  };

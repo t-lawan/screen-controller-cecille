@@ -91,6 +91,21 @@ functions:
           method: post
           path: screen/update
           cors: true
+  connectSocket:
+    handler: src/controllers/CommunicationController.connectSocket
+    events:
+      - websocket:
+          route: $connect
+  disconnectSocket:
+    handler: src/controllers/CommunicationController.disconnectSocket
+    events:
+      - websocket:
+          route: $disconnect
+  messageSocket:    
+    handler: src/controllers/CommunicationController.messageSocket
+    events:
+      - websocket:
+          route: $default
 
 resources:
   Resources:
