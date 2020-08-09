@@ -40,6 +40,13 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VIDEO_DYNAMODB_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCREEN_COMMUNICATION_DYNAMODB_TABLE}"
 
 functions:
   addVideo:
