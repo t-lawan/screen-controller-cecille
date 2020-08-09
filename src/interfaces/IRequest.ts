@@ -1,6 +1,8 @@
 import { EVideoType } from '../Enum/EVideoType';
 import { EScreenType } from '../Enum/EScreenType';
 import { IPlaylistEntry } from './IPlaylistEntry';
+import { EWSMessageType } from '../Enum/EWSMessageType';
+import { EWSClientType } from '../Enum/EWSClientType';
 export interface IAddVideoRequestBody {
     title: string;
     uri: string;
@@ -29,4 +31,11 @@ export interface IUpdateScreenRequestBody {
     number_of_screens: number;
     video_file_playlist: IPlaylistEntry[];
     screen_type: EScreenType;
+}
+
+export interface IWebsocketMessage {
+    message: EWSMessageType;
+    client_type: EWSClientType;
+    raspberry_pi_id?: number;
+    payload: any;
 }
