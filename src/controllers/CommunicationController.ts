@@ -78,7 +78,10 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
         await ActionService.sendGeneric(body, url);
         break;
       case EWSMessageType.START_AUDIO:
-        await ActionService.sendGeneric(body, url);
+        await ActionService.startAudio(body, url);
+        break;
+      case EWSMessageType.START_SCHEDULE:
+        await ActionService.startSchedule(body, url);
         break;
       default:
         console.log('DEFAULT')

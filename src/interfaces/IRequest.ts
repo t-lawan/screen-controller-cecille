@@ -39,3 +39,6 @@ export interface IWebsocketMessage {
     raspberry_pi_id?: number;
     payload?: any;
 }
+
+let exampleMessage = "{'message': 'START_SCHEDULE', 'client_type':'MASTER'}"
+let initMessage = "{'message': 'INITIALISE', 'client_type':'ADMIN', 'raspberry_pi_id': 0 }"
