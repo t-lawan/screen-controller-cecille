@@ -2,9 +2,10 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import { ResponseService } from "../services/ResponseService";
 import { ApiGatewayManagementApi } from "aws-sdk";
 import { DatabaseService } from "../services/DatabaseService";
-import { ETableName } from '../Enum/ETableName';
+import { ETableName } from "../Enum/ETableName";
 import { IWebsocketMessage } from "../interfaces/IRequest";
 import { EWSMessageType } from "../Enum/EWSMessageType";
+import { ActionService } from '../services/ActionService';
 export const connectSocket: APIGatewayProxyHandler = async (event, context) => {
   const connectionId = event.requestContext.connectionId;
   const stage = event.requestContext.stage;
@@ -59,43 +60,31 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
 
     let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
 
-    // Save raspberry pi id in Communication table if MESSSaGE = INITIALISE
-    if (body.message === EWSMessageType.INITIALISE) {
-      await db.updateItem(connectionId, {
-        raspberry_pi_id: body.raspberry_pi_id,
-        client_type: body.client_type
-      });
-    }
 
-    // IF MESSAGE IS START STREAM OR STOP STREAM
-    if (
-      body.message === EWSMessageType.START_STREAM ||
-      body.message === EWSMessageType.STOP_STREAM
-    ) {
-      const apigatewaymanagementapi = new ApiGatewayManagementApi({
-        apiVersion: "2018-11-29",
-        endpoint: url
-      });
+    switch(body.message) {
+      case EWSMessageType.INITIALISE:
+        await ActionService.initialise(connectionId, body);
+        break;
+      case EWSMessageType.START_STREAM:
+        await ActionService.sendGeneric(body, url);
+        break;
+      case EWSMessageType.STOP_STREAM:
+        await ActionService.sendGeneric(body, url);
+        break;      
+      case EWSMessageType.START_PLAYLIST:
+        await ActionService.sendGeneric(body, url);
+        break;
+      case EWSMessageType.STOP_PLAYLIST:
+        await ActionService.sendGeneric(body, url);
+        break;
+      case EWSMessageType.START_AUDIO:
+        await ActionService.sendGeneric(body, url);
+        break;
+      default:
+        console.log('DEFAULT')
+        break;
 
-      let payload = {
-        message: body.message,
-        success: true
-      };
-      await apigatewaymanagementapi
-        .postToConnection({
-          Data: JSON.stringify(payload),
-          ConnectionId: connectionId
-        })
-        .promise()
-        .then(data => {
-          return ResponseService.success("success");
-        })
-        .catch(error => {
-          console.log("error", error);
-          return ResponseService.success("error");
-        });
     }
-    // Send response to client
 
     return ResponseService.success("success");
   } catch (error) {
@@ -118,24 +107,24 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
 };
 
 export const disconnectSocket: APIGatewayProxyHandler = async (
-    event,
-    context
-  ) => {
-    try {
-      const connectionId = event.requestContext.connectionId;
-  
-      let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
-      await db
-        .deleteItem(connectionId)
-        .then(() => {
-          console.log("deleted successfully");
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-  
-      return ResponseService.success("success");
-    } catch (error) {
-      return ResponseService.error(error.message, error.statusCode);
-    }
-  };
+  event,
+  context
+) => {
+  try {
+    const connectionId = event.requestContext.connectionId;
+
+    let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
+    await db
+      .deleteItem(connectionId)
+      .then(() => {
+        console.log("deleted successfully");
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    return ResponseService.success("success");
+  } catch (error) {
+    return ResponseService.error(error.message, error.statusCode);
+  }
+};
