@@ -36,10 +36,10 @@ export class ActionService {
         endpoint: url
       });
 
-      let data = {
+      let data: IWebsocketMessage = {
         message: message.message,
         payload: message.payload ? message.payload : null,
-        success: true
+        client_type: message.client_type
       };
 
       await apigatewaymanagementapi
@@ -71,10 +71,10 @@ export class ActionService {
           endpoint: url
         });
   
-        let data = {
+        let data: IWebsocketMessage = {
           message: message.message,
-          payload: message.payload,
-          success: true
+          payload: message.payload ? message.payload : null,
+          client_type: message.client_type
         };
   
         await apigatewaymanagementapi
@@ -108,14 +108,15 @@ export class ActionService {
           endpoint: url
         });
   
-        let payload = {
+        let data: IWebsocketMessage = {
           message: message.message,
-          success: true
+          payload: message.payload ? message.payload : null,
+          client_type: message.client_type
         };
   
         await apigatewaymanagementapi
         .postToConnection({
-          Data: JSON.stringify(payload),
+          Data: JSON.stringify(data),
           ConnectionId: device.id
         })
         .promise()
@@ -144,10 +145,10 @@ export class ActionService {
           endpoint: url
         });
   
-        let data = {
+        let data: IWebsocketMessage = {
           message: message.message,
-          payload: message.payload,
-          success: true
+          payload: message.payload ? message.payload : null,
+          client_type: message.client_type
         };
   
         await apigatewaymanagementapi
@@ -180,10 +181,10 @@ export class ActionService {
           endpoint: url
         });
   
-        let data = {
+        let data: IWebsocketMessage = {
           message: message.message,
-          payload: message.payload,
-          success: true
+          payload: message.payload ? message.payload : null,
+          client_type: message.client_type
         };
   
         await apigatewaymanagementapi
