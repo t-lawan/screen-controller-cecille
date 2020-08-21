@@ -36,21 +36,22 @@ export class ActionService {
         endpoint: url
       });
 
-      let payload = {
+      let data = {
         message: message.message,
+        payload: message.payload ? message.payload : null,
         success: true
       };
 
       await apigatewaymanagementapi
       .postToConnection({
-        Data: JSON.stringify(payload),
+        Data: JSON.stringify(data),
         ConnectionId: device.id
       })
       .promise()
     }
   };
 
-  static startAudio = async (message: IWebsocketMessage, url: string) => {
+  static sendToMasterOrAdmin = async (message: IWebsocketMessage, url: string) => {
     let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
     // Get Connection ID of Receiver
     if(message.client_type === EWSClientType.ADMIN || message.client_type === EWSClientType.MASTER) {
@@ -70,23 +71,23 @@ export class ActionService {
           endpoint: url
         });
   
-        let payload = {
+        let data = {
           message: message.message,
+          payload: message.payload,
           success: true
         };
   
         await apigatewaymanagementapi
         .postToConnection({
-          Data: JSON.stringify(payload),
+          Data: JSON.stringify(data),
           ConnectionId: device.id
         })
         .promise()
       }
     } 
-
   };
 
-  static startSchedule = async (message: IWebsocketMessage, url: string) => {
+  static sendToMaster = async (message: IWebsocketMessage, url: string) => {
     let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
     // Get Connection ID of Receiver
     if(message.client_type === EWSClientType.MASTER) {
@@ -121,5 +122,77 @@ export class ActionService {
       }
     } 
 
+  };
+
+  static startVideo = async (message: IWebsocketMessage, url: string) => {
+    let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
+    // Get Connection ID of Receiver
+    if(message.raspberry_pi_id) {
+      let response = await db.scan(
+        {
+          raspberry_pi_id: message.raspberry_pi_id
+        },
+        true
+      );
+
+      let device = response.Items[0];
+  
+      // If Connection ID exists then send action
+      if (device) {
+        const apigatewaymanagementapi = new ApiGatewayManagementApi({
+          apiVersion: "2018-11-29",
+          endpoint: url
+        });
+  
+        let data = {
+          message: message.message,
+          payload: message.payload,
+          success: true
+        };
+  
+        await apigatewaymanagementapi
+        .postToConnection({
+          Data: JSON.stringify(data),
+          ConnectionId: device.id
+        })
+        .promise()
+      }
+    } 
+  };
+
+  static startStream = async (message: IWebsocketMessage, url: string) => {
+    let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
+    // Get Connection ID of Receiver
+    if(message.raspberry_pi_id) {
+      let response = await db.scan(
+        {
+          raspberry_pi_id: message.raspberry_pi_id
+        },
+        true
+      );
+
+      let device = response.Items[0];
+  
+      // If Connection ID exists then send action
+      if (device) {
+        const apigatewaymanagementapi = new ApiGatewayManagementApi({
+          apiVersion: "2018-11-29",
+          endpoint: url
+        });
+  
+        let data = {
+          message: message.message,
+          payload: message.payload,
+          success: true
+        };
+  
+        await apigatewaymanagementapi
+        .postToConnection({
+          Data: JSON.stringify(data),
+          ConnectionId: device.id
+        })
+        .promise()
+      }
+    } 
   };
 }

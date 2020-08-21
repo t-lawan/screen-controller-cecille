@@ -24,6 +24,7 @@ provider:
     SCREEN_COMMUNICATION_DYNAMODB_TABLE: screen_communication
     SCREENS_DYNAMODB_TABLE: screens
     VIDEO_DYNAMODB_TABLE: videos
+    AUDIO_DYNAMODB_TABLE: audio
     REGION: us-east-1
   iamRoleStatements:
     - Effect: Allow
@@ -50,6 +51,14 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCREEN_COMMUNICATION_DYNAMODB_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.AUDIO_DYNAMODB_TABLE}"
 
 functions:
   addVideo:
@@ -101,6 +110,27 @@ functions:
           method: post
           path: screen/update
           cors: true
+  addAudio:
+    handler: src/controllers/AudioController.addAudio
+    events:
+      - http: 
+          method: post
+          path: audio/create
+          cors: true
+  getAudio:
+    handler: src/controllers/AudioController.getAllAudio
+    events:
+      - http: 
+          method: get
+          path: audio
+          cors: true
+  updateAudio:
+    handler: src/controllers/AudioController.updateAudio
+    events:
+      - http: 
+          method: post
+          path: audio/update
+          cors: true
   connectSocket:
     handler: src/controllers/CommunicationController.connectSocket
     events:
@@ -149,6 +179,19 @@ resources:
       Type: "AWS::DynamoDB::Table"
       Properties:
         TableName: ${self:provider.environment.VIDEO_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    AudioTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.AUDIO_DYNAMODB_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

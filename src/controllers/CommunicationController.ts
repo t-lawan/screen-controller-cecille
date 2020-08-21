@@ -78,10 +78,16 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
         await ActionService.sendGeneric(body, url);
         break;
       case EWSMessageType.START_AUDIO:
-        await ActionService.startAudio(body, url);
+        await ActionService.sendToMasterOrAdmin(body, url);
+        break;
+      case EWSMessageType.START_VIDEO:
+        await ActionService.startVideo(body, url);
         break;
       case EWSMessageType.START_SCHEDULE:
-        await ActionService.startSchedule(body, url);
+        await ActionService.sendToMasterOrAdmin(body, url);
+        break;
+      case EWSMessageType.STOP_SCHEDULE:
+        await ActionService.sendToMasterOrAdmin(body, url);
         break;
       default:
         console.log('DEFAULT')

@@ -33,6 +33,11 @@ export interface IUpdateScreenRequestBody {
     screen_type: EScreenType;
 }
 
+export interface IAddAudioRequestBody {
+    title: string;
+    uri: string;
+}
+
 export interface IWebsocketMessage {
     message: EWSMessageType;
     client_type: EWSClientType;
@@ -40,5 +45,5 @@ export interface IWebsocketMessage {
     payload?: any;
 }
 
-let exampleMessage = "{'message': 'START_SCHEDULE', 'client_type':'MASTER'}"
-let initMessage = "{'message': 'INITIALISE', 'client_type':'ADMIN', 'raspberry_pi_id': 0 }"
+let exampleMessage = {"message": "START_SCHEDULE", "client_type":"MASTER"}
+let initMessage = {"client_type":"ADMIN","message":"INITIALISE","raspberry_pi_id":0}
