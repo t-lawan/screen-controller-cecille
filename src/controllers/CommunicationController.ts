@@ -89,6 +89,9 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
       case EWSMessageType.STOP_SCHEDULE:
         await ActionService.sendToMasterOrAdmin(body, url);
         break;
+      case EWSMessageType.GET_AUDIO_INFO:
+        await ActionService.sendToMaster(body, url)
+        break;
       default:
         console.log('DEFAULT')
         break;

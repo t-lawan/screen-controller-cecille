@@ -8,5 +8,6 @@ export enum EWSMessageType {
     STOP_SCHEDULE = 'STOP_SCHEDULE',
     START_AUDIO = 'START_AUDIO',
     START_VIDEO = 'START_VIDEO',
+    GET_AUDIO_INFO = 'GET_AUDIO_INFO'
 
 }
