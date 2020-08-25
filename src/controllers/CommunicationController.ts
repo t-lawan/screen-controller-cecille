@@ -66,7 +66,7 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
         await ActionService.initialise(connectionId, body);
         break;
       case EWSMessageType.START_STREAM:
-        await ActionService.sendGeneric(body, url);
+        await ActionService.startVideo(body, url);
         break;
       case EWSMessageType.STOP_STREAM:
         await ActionService.sendGeneric(body, url);
