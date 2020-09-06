@@ -26,7 +26,8 @@ export const addScreen: APIGatewayProxyHandler = async (event, context) => {
       body.raspberry_pi_id,
       body.screen_type,
       body.number_of_screens,
-      body.video_file_playlist
+      body.video_id,
+      body.video_file_playlist,
     );
     let db: DatabaseService;
 

@@ -2,7 +2,8 @@ import { DatabaseService } from "./DatabaseService";
 import { IWebsocketMessage } from "../interfaces/IRequest";
 import { ETableName } from "../Enum/ETableName";
 import { ApiGatewayManagementApi } from "aws-sdk";
-import { EWSClientType } from '../Enum/EWSClientType';
+import { EWSClientType } from "../Enum/EWSClientType";
+import { EWSMessageType } from "../Enum/EWSMessageType";
 export class ActionService {
   // Save raspberry pi id in Communication table if MESSSaGE = INITIALISE
 
@@ -85,7 +86,6 @@ export class ActionService {
         })
         .promise();
     }
-
 
     let adminQueryResponse = await db.scan(
       {
@@ -197,6 +197,115 @@ export class ActionService {
             .promise();
         });
       }
+    }
+  };
+
+  static sendToAll = async (message: IWebsocketMessage, url: string) => {
+    let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
+
+    // SEND TO ALL DISPLAY PIS
+    let response = await db.scan(
+      {
+        client_type: EWSClientType.DISPLAY
+      },
+      true
+    );
+
+    let data: IWebsocketMessage = {
+      message: message.message,
+      payload: message.payload ? message.payload : null,
+      client_type: message.client_type,
+      raspberry_pi_id: message.raspberry_pi_id
+    };
+
+    let devices = response.Items;
+    const apigatewaymanagementapi = new ApiGatewayManagementApi({
+      apiVersion: "2018-11-29",
+      endpoint: url
+    });
+    // If Device is logged in then send action
+    if (devices.length > 0) {
+      devices.forEach(async device => {
+        await apigatewaymanagementapi
+          .postToConnection({
+            Data: JSON.stringify(data),
+            ConnectionId: device.id
+          })
+          .promise();
+      });
+    }
+
+    let adminQueryResponse = await db.scan(
+      {
+        client_type: EWSClientType.ADMIN
+      },
+      true
+    );
+
+    let adminDevices = adminQueryResponse.Items;
+    // If logged in then send info
+    if (adminDevices.length > 0) {
+      adminDevices.forEach(async adminDevice => {
+        await apigatewaymanagementapi
+          .postToConnection({
+            Data: JSON.stringify(data),
+            ConnectionId: adminDevice.id
+          })
+          .promise();
+      });
+    }
+
+    let masterQueryResponse = await db.scan(
+      {
+        client_type: EWSClientType.MASTER
+      },
+      true
+    );
+
+    let masterDevice = masterQueryResponse.Items[0];
+    if (masterDevice) {
+      await apigatewaymanagementapi
+        .postToConnection({
+          Data: JSON.stringify(data),
+          ConnectionId: masterDevice.id
+        })
+        .promise();
+    }
+  };
+
+  static startAllDisplays = async (message: IWebsocketMessage, url: string) => {
+    let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
+
+    // SEND TO ALL DISPLAY PIS
+    let response = await db.scan(
+      {
+        client_type: EWSClientType.DISPLAY
+      },
+      true
+    );
+
+    let data: IWebsocketMessage = {
+      message: EWSMessageType.START_VIDEO,
+      payload: null,
+      client_type: message.client_type,
+      raspberry_pi_id: message.raspberry_pi_id
+    };
+
+    let devices = response.Items;
+    const apigatewaymanagementapi = new ApiGatewayManagementApi({
+      apiVersion: "2018-11-29",
+      endpoint: url
+    });
+    // If Device is logged in then send action
+    if (devices.length > 0) {
+      devices.forEach(async device => {
+        await apigatewaymanagementapi
+          .postToConnection({
+            Data: JSON.stringify(data),
+            ConnectionId: device.id
+          })
+          .promise();
+      });
     }
   };
 

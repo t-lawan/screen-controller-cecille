@@ -22,15 +22,17 @@ export interface IAddScreenRequestBody {
     number_of_screens: number;
     video_file_playlist: IPlaylistEntry[];
     screen_type: EScreenType;
+    video_id: string;
 }
 
 export interface IUpdateScreenRequestBody {
-    id: string;
+    id: string; 
     local_ip_address: string;
     raspberry_pi_id: number;
     number_of_screens: number;
     video_file_playlist: IPlaylistEntry[];
     screen_type: EScreenType;
+    video_id: string;
 }
 
 export interface IAddAudioRequestBody {
