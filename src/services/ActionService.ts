@@ -9,13 +9,35 @@ export class ActionService {
 
   static initialise = async (
     connectionId: string,
-    message: IWebsocketMessage
+    message: IWebsocketMessage,
+    url: string
   ) => {
     let db: DatabaseService = new DatabaseService(ETableName.COMMUNICATION);
     await db.updateItem(connectionId, {
       raspberry_pi_id: message.raspberry_pi_id,
       client_type: message.client_type
     });
+
+    // if (message.client_type === EWSClientType.DISPLAY) {
+    //   const apigatewaymanagementapi = new ApiGatewayManagementApi({
+    //     apiVersion: "2018-11-29",
+    //     endpoint: url
+    //   });
+
+    //   let data: IWebsocketMessage = {
+    //     message: EWSMessageType.START_VIDEO,
+    //     payload: null,
+    //     client_type: message.client_type,
+    //     raspberry_pi_id: message.raspberry_pi_id
+    //   };
+
+    //   await apigatewaymanagementapi
+    //     .postToConnection({
+    //       Data: JSON.stringify(data),
+    //       ConnectionId: connectionId
+    //     })
+    //     .promise();
+    // }
   };
 
   static sendGeneric = async (message: IWebsocketMessage, url: string) => {
@@ -218,41 +240,29 @@ export class ActionService {
       raspberry_pi_id: message.raspberry_pi_id
     };
 
-    let devices = response.Items;
     const apigatewaymanagementapi = new ApiGatewayManagementApi({
       apiVersion: "2018-11-29",
       endpoint: url
     });
-    // If Device is logged in then send action
-    if (devices.length > 0) {
-      devices.forEach(async device => {
-        await apigatewaymanagementapi
-          .postToConnection({
-            Data: JSON.stringify(data),
-            ConnectionId: device.id
-          })
-          .promise();
-      });
-    }
 
-    let adminQueryResponse = await db.scan(
-      {
-        client_type: EWSClientType.ADMIN
-      },
-      true
-    );
+    if (response && response.Items) {
+      let devices = response.Items;
 
-    let adminDevices = adminQueryResponse.Items;
-    // If logged in then send info
-    if (adminDevices.length > 0) {
-      adminDevices.forEach(async adminDevice => {
-        await apigatewaymanagementapi
-          .postToConnection({
-            Data: JSON.stringify(data),
-            ConnectionId: adminDevice.id
-          })
-          .promise();
-      });
+      // If Device is logged in then send action
+      if (devices.length > 0) {
+        devices.forEach(async device => {
+          data = {
+            ...data,
+            raspberry_pi_id: device.raspberry_pi_id
+          };
+          await apigatewaymanagementapi
+            .postToConnection({
+              Data: JSON.stringify(data),
+              ConnectionId: device.id
+            })
+            .promise();
+        });
+      }
     }
 
     let masterQueryResponse = await db.scan(
@@ -262,14 +272,38 @@ export class ActionService {
       true
     );
 
-    let masterDevice = masterQueryResponse.Items[0];
-    if (masterDevice) {
-      await apigatewaymanagementapi
-        .postToConnection({
-          Data: JSON.stringify(data),
-          ConnectionId: masterDevice.id
-        })
-        .promise();
+    if (masterQueryResponse && masterQueryResponse.Items) {
+      let masterDevice = masterQueryResponse.Items[0];
+      if (masterDevice) {
+        await apigatewaymanagementapi
+          .postToConnection({
+            Data: JSON.stringify(data),
+            ConnectionId: masterDevice.id
+          })
+          .promise();
+      }
+    }
+
+    let adminQueryResponse = await db.scan(
+      {
+        client_type: EWSClientType.ADMIN
+      },
+      true
+    );
+
+    if (adminQueryResponse && adminQueryResponse.Items) {
+      let adminDevices = adminQueryResponse.Items;
+      // If logged in then send info
+      if (adminDevices.length > 0) {
+        adminDevices.forEach(async adminDevice => {
+          await apigatewaymanagementapi
+            .postToConnection({
+              Data: JSON.stringify(data),
+              ConnectionId: adminDevice.id
+            })
+            .promise();
+        });
+      }
     }
   };
 

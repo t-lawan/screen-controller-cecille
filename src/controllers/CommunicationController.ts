@@ -63,7 +63,7 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
 
     switch(body.message) {
       case EWSMessageType.INITIALISE:
-        await ActionService.initialise(connectionId, body);
+        await ActionService.initialise(connectionId, body, url);
         break;
       case EWSMessageType.START_STREAM:
         await ActionService.startVideo(body, url);
@@ -84,10 +84,10 @@ export const messageSocket: APIGatewayProxyHandler = async (event, context) => {
         await ActionService.startVideo(body, url);
         break;
       case EWSMessageType.START_SCHEDULE:
-        await ActionService.sendToMasterAndAdmin(body, url);
+        await ActionService.sendToAll(body, url);
         break;
       case EWSMessageType.STOP_SCHEDULE:
-        await ActionService.sendToMasterAndAdmin(body, url);
+        await ActionService.sendToAll(body, url);
         break;
       case EWSMessageType.GET_AUDIO_INFO:
         await ActionService.sendToMaster(body, url)
