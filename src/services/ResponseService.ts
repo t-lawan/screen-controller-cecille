@@ -21,6 +21,17 @@ export class ResponseService {
         }
     }
 
+    static csv = (data: string) => {
+        return {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true,
+                'Content-Type': 'text/csv'
+            },
+            body: data
+        }
+    }
+
     static generateBody = (data: object| string | null, error: string | null, success: boolean): string => {
         let body =  {
             data: data,

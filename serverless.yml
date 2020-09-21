@@ -25,6 +25,7 @@ provider:
     SCREENS_DYNAMODB_TABLE: screens
     VIDEO_DYNAMODB_TABLE: videos
     AUDIO_DYNAMODB_TABLE: audio
+    SCHEDULE_DYNAMODB_TABLE: schedule
     REGION: us-east-1
   iamRoleStatements:
     - Effect: Allow
@@ -59,6 +60,14 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.AUDIO_DYNAMODB_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCHEDULE_DYNAMODB_TABLE}"
 
 functions:
   addVideo:
@@ -74,6 +83,13 @@ functions:
       - http: 
           method: get
           path: videos
+          cors: true
+  getVideosCSV:
+    handler: src/controllers/VideoController.getCSVList
+    events:
+      - http: 
+          method: get
+          path: videos/csv
           cors: true
   updateVideo:
     handler: src/controllers/VideoController.updateVideo
@@ -192,6 +208,19 @@ resources:
       Type: "AWS::DynamoDB::Table"
       Properties:
         TableName: ${self:provider.environment.AUDIO_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    ScheduleTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.SCHEDULE_DYNAMODB_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

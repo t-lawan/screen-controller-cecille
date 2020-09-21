@@ -11,7 +11,7 @@ import {
   IUpdateVideoRequestBody
 } from "../interfaces/IRequest";
 import validator from "validator";
-
+import { convertArrayToCSV } from 'convert-array-to-csv';
 export const addVideo: APIGatewayProxyHandler = async (event, context) => {
   try {
     let video: IVideo;
@@ -59,6 +59,23 @@ export const getAllVideos: APIGatewayProxyHandler = async (event, context) => {
     let response = await db.getAllItems();
     videos = response.Items;
     return ResponseService.success(videos);
+  } catch (error) {
+    return ResponseService.error(error.message, error.statusCode);
+  }
+};
+
+export const getCSVList: APIGatewayProxyHandler = async (event, context) => {
+  try {
+    let videos: IVideo[] = [];
+    let db: DatabaseService;
+
+    db = new DatabaseService(ETableName.VIDEOS);
+    let response = await db.getAllItems();
+    
+    videos = response.Items;
+
+    let csv = convertArrayToCSV(videos);
+    return ResponseService.csv(csv);
   } catch (error) {
     return ResponseService.error(error.message, error.statusCode);
   }
