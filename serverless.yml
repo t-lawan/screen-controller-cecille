@@ -68,6 +68,10 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCHEDULE_DYNAMODB_TABLE}"
+    - Effect: Allow
+	    Action:
+	      - lambda:InvokeFunction
+	    Resource: "*"
 
 functions:
   addVideo:
