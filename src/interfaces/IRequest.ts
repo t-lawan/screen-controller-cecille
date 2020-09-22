@@ -3,6 +3,7 @@ import { EScreenType } from '../Enum/EScreenType';
 import { IPlaylistEntry } from './IPlaylistEntry';
 import { EWSMessageType } from '../Enum/EWSMessageType';
 import { EWSClientType } from '../Enum/EWSClientType';
+import { EScheduleTableType } from '../Enum/EScheduleTableType';
 export interface IAddVideoRequestBody {
     title: string;
     uri: string;
@@ -23,6 +24,15 @@ export interface IAddScreenRequestBody {
     video_file_playlist: IPlaylistEntry[];
     screen_type: EScreenType;
     video_id: string;
+}
+
+export interface IScheduleItem {
+    id: string;
+    pi_id?: string;
+    payload?: string;
+    type: EScheduleTableType;
+    is_active?: boolean;
+
 }
 
 export interface IUpdateScreenRequestBody {

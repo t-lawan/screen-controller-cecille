@@ -1,9 +1,10 @@
 import { DatabaseService } from "./DatabaseService";
 import { IWebsocketMessage } from "../interfaces/IRequest";
 import { ETableName } from "../Enum/ETableName";
-import { ApiGatewayManagementApi } from "aws-sdk";
+import { ApiGatewayManagementApi, Lambda } from "aws-sdk";
 import { EWSClientType } from "../Enum/EWSClientType";
 import { EWSMessageType } from "../Enum/EWSMessageType";
+
 export class ActionService {
   // Save raspberry pi id in Communication table if MESSSaGE = INITIALISE
 
@@ -219,6 +220,17 @@ export class ActionService {
             .promise();
         });
       }
+
+      let lambda = new Lambda();
+      let payload = {
+        pi_id: message.raspberry_pi_id,
+        payload: message.payload
+      }
+
+      lambda.invoke({
+        FunctionName: 'screen-controller-cecille-dev-updatePiSchedule',
+        Payload: JSON.stringify(payload)
+      })
     }
   };
 
@@ -305,6 +317,21 @@ export class ActionService {
         });
       }
     }
+
+    let lambda = new Lambda();
+    let functionName
+    switch(message.message) {
+      case EWSMessageType.START_SCHEDULE:
+        functionName = 'screen-controller-cecille-dev-startSchedule';
+        break;
+      case EWSMessageType.STOP_SCHEDULE:
+        functionName = 'screen-controller-cecille-dev-stopSchedule';
+        break;
+    }
+
+    lambda.invoke({
+      FunctionName: functionName
+    })
   };
 
   static startAllDisplays = async (message: IWebsocketMessage, url: string) => {

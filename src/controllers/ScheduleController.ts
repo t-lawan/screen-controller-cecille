@@ -1,13 +1,14 @@
-import { Handler, ProxyHandler } from "aws-lambda";
+import { Handler, ProxyHandler, APIGatewayProxyHandler } from "aws-lambda";
 import { DatabaseService } from '../services/DatabaseService';
 import { ETableName } from '../Enum/ETableName';
-import { IPiSchedulePayload } from '../interfaces/IRequest';
+import { IPiSchedulePayload, IScheduleItem } from '../interfaces/IRequest';
 import { v4} from 'uuid'
 import { EScheduleTableType } from '../Enum/EScheduleTableType';
+import { ResponseService } from "../services/ResponseService";
 
 
 
-export const setPiPayload: Handler = async (event, context) => {
+export const updatePiSchedule: Handler = async (event, context) => {
     let db: DatabaseService = new DatabaseService(ETableName.SCHEDULE);
     let body: IPiSchedulePayload = event.body;
     if(!body.pi_id) {
@@ -27,7 +28,7 @@ export const setPiPayload: Handler = async (event, context) => {
             payload: body.payload
         })
     } else {
-        let item = {
+        let item: IScheduleItem = {
             id: v4(),
             pi_id: body.pi_id,
             payload: body.payload,
@@ -45,13 +46,13 @@ export const startSchedule: Handler = async (event, context) => {
 
     if(response && response.Items[0]) {
         await db.updateItem(response.Items[0], {
-            isActive: true
+            is_active: true
         })
     } else {
-        let item = {
+        let item: IScheduleItem = {
             id: v4(),
             type: EScheduleTableType.ACTIVE,
-            isActive: true
+            is_active: true
         }
         await db.putItem(item);
     }
@@ -65,15 +66,42 @@ export const stopSchedule: Handler = async (event, context) => {
 
     if(response && response.Items[0]) {
         await db.updateItem(response.Items[0], {
-            isActive: false
+            is_active: false
         })
     } else {
-        let item = {
+        let item: IScheduleItem = {
             id: v4(),
             type: EScheduleTableType.ACTIVE,
-            isActive: false
+            is_active: false
         }
         await db.putItem(item);
     }
 }
+
+export const getCurrentVideos: APIGatewayProxyHandler = async (event, context) => {
+    try {
+      let db: DatabaseService = new DatabaseService(ETableName.SCHEDULE)
+
+      let response = await db.getAllItems();
+
+      let screens: IScheduleItem[] = response.Items;
+
+      let activeScheduleItem: IScheduleItem  = screens.find((vid) => {
+          return vid.is_active
+      })
+
+      screens = screens.filter((vid) => {
+          return vid.type === EScheduleTableType.STATUS
+      })
+
+      let object = {
+          is_active: activeScheduleItem ? activeScheduleItem.is_active : false,
+          screens: screens
+      }
+  
+      return ResponseService.success(object);
+    } catch (error) {
+      return ResponseService.error(error.message, error.statusCode);
+    }
+  };
 

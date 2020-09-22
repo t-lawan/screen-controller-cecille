@@ -30,6 +30,10 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - lambda:InvokeFunction
+      Resource: "*"
+    - Effect: Allow
+      Action:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
@@ -68,10 +72,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCHEDULE_DYNAMODB_TABLE}"
-    - Effect: Allow
-	    Action:
-	      - lambda:InvokeFunction
-	    Resource: "*"
+
 
 functions:
   addVideo:
@@ -166,6 +167,13 @@ functions:
     events:
       - websocket:
           route: $default
+  updatePiSchedule:    
+    handler: src/controllers/ScheduleController.updatePiSchedule
+  startSchedule:    
+    handler: src/controllers/ScheduleController.startSchedule
+  stopSchedule:    
+    handler: src/controllers/ScheduleController.stopSchedule
+
 
 resources:
   Resources:
