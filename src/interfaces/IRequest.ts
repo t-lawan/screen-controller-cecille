@@ -30,7 +30,7 @@ export interface IScheduleItem {
     id: string;
     pi_id?: string;
     payload?: string;
-    type: EScheduleTableType;
+    schedule_type: EScheduleTableType;
     is_active?: boolean;
 
 }

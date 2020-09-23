@@ -145,6 +145,13 @@ functions:
           method: get
           path: audio
           cors: true
+  getVideosScheduledOnScreens:
+    handler: src/controllers/ScheduleController.getVideosScheduledOnScreens
+    events:
+      - http: 
+          method: get
+          path: schedule/is_active
+          cors: true
   updateAudio:
     handler: src/controllers/AudioController.updateAudio
     events:

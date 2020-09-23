@@ -32,7 +32,7 @@ export const updatePiSchedule: Handler = async (event, context) => {
             id: v4(),
             pi_id: body.pi_id,
             payload: body.payload,
-            type: EScheduleTableType.STATUS
+            schedule_type: EScheduleTableType.STATUS
         }
         await db.putItem(item);
     }
@@ -41,7 +41,7 @@ export const updatePiSchedule: Handler = async (event, context) => {
 export const startSchedule: Handler = async (event, context) => {
     let db: DatabaseService = new DatabaseService(ETableName.SCHEDULE);
     let response = await db.scan({
-        type: EScheduleTableType.ACTIVE
+        schedule_type: EScheduleTableType.ACTIVE
     }, true);
 
     if(response && response.Items[0]) {
@@ -51,7 +51,7 @@ export const startSchedule: Handler = async (event, context) => {
     } else {
         let item: IScheduleItem = {
             id: v4(),
-            type: EScheduleTableType.ACTIVE,
+            schedule_type: EScheduleTableType.ACTIVE,
             is_active: true
         }
         await db.putItem(item);
@@ -71,14 +71,14 @@ export const stopSchedule: Handler = async (event, context) => {
     } else {
         let item: IScheduleItem = {
             id: v4(),
-            type: EScheduleTableType.ACTIVE,
+            schedule_type: EScheduleTableType.ACTIVE,
             is_active: false
         }
         await db.putItem(item);
     }
 }
 
-export const getCurrentVideos: APIGatewayProxyHandler = async (event, context) => {
+export const getVideosScheduledOnScreens: APIGatewayProxyHandler = async (event, context) => {
     try {
       let db: DatabaseService = new DatabaseService(ETableName.SCHEDULE)
 
@@ -91,7 +91,7 @@ export const getCurrentVideos: APIGatewayProxyHandler = async (event, context) =
       })
 
       screens = screens.filter((vid) => {
-          return vid.type === EScheduleTableType.STATUS
+          return vid.schedule_type === EScheduleTableType.STATUS
       })
 
       let object = {

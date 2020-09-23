@@ -318,20 +318,34 @@ export class ActionService {
       }
     }
 
-    let lambda = new Lambda();
-    let functionName
-    switch(message.message) {
-      case EWSMessageType.START_SCHEDULE:
-        functionName = 'screen-controller-cecille-dev-startSchedule';
-        break;
-      case EWSMessageType.STOP_SCHEDULE:
-        functionName = 'screen-controller-cecille-dev-stopSchedule';
-        break;
+    if(message.message === "START_SCHEDULE" || message.message === EWSMessageType.STOP_SCHEDULE) {
+      let lambda = new Lambda();
+      let functionName
+      switch(message.message) {
+        case EWSMessageType.START_SCHEDULE:
+          functionName = 'screen-controller-cecille-dev-startSchedule';
+          break;
+        case EWSMessageType.STOP_SCHEDULE:
+          functionName = 'screen-controller-cecille-dev-stopSchedule';
+          break;
+      }
+
+      console.log('FUNCTION NAME', functionName)
+  
+      lambda.invoke({
+        FunctionName: functionName
+      }, (err, data) => {
+        if(err) {
+          console.log('ERROR', err)
+        }
+
+        if(data) {
+          console.log('data', data)
+
+        }
+      })
     }
 
-    lambda.invoke({
-      FunctionName: functionName
-    })
   };
 
   static startAllDisplays = async (message: IWebsocketMessage, url: string) => {
